@@ -32,7 +32,6 @@ ENV/
 *.swo
 
 # Data and Logs
-data/
 logs/
 *.log
 embeddings/
