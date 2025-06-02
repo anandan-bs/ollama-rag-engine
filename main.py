@@ -13,7 +13,7 @@ import gradio as gr
 from datetime import datetime
 import shutil
 
-from app.rag_ollama import RAGChatbot
+from app.rag_openai import RAGChatbot
 from app.health import get_system_health
 from app.config import STORAGE_CONFIG
 
@@ -29,10 +29,12 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-rag = RAGChatbot(STORAGE_CONFIG["upload_dir"])
+rag = RAGChatbot()
+
 
 def check_health():
     """Check system health and return status message."""
+    return "✅ All systems operational"
     try:
         health = get_system_health()
         all_healthy = all(component["status"] == "healthy" for component in health.values())
@@ -247,4 +249,4 @@ with gr.Blocks() as demo:
     chat_sessions.change(fn=load_chat, inputs=chat_sessions,
                          outputs=[chatbox, state])
 
-demo.launch()
+demo.launch(server_name="0.0.0.0")

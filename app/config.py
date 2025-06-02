@@ -28,13 +28,14 @@ EMBEDDING_CONFIG = {
 # Database Configuration
 DB_CONFIG = {
     "collection_name": os.getenv("CHROMA_COLLECTION_NAME", "knowledge_base"),
-    "path": os.getenv("DB_PATH", "embeddings/chroma_db"),
+    "store_path": os.getenv("DB_PATH", "data/chroma_db"),
+    "data_dir": os.getenv("DATA_DIR", "data/uploads"),
 }
 
 # File Storage Configuration
 STORAGE_CONFIG = {
     "upload_dir": os.getenv("UPLOAD_DIR", "data/uploads"),
-    "chatlog_dir": os.getenv("CHATLOG_DIR", "chatlogs"),
+    "chatlog_dir": os.getenv("CHATLOG_DIR", "data/chatlogs"),
 }
 
 # Text Processing Configuration
@@ -46,10 +47,14 @@ PROCESSING_CONFIG = {
 ENV = os.getenv("ENV", "development")
 DEBUG = os.getenv("DEBUG", "true").lower() == "true"
 
+OPENAI_CONFIG = {
+    "api_key": os.getenv("OPENAI_API_KEY"),
+}
+
 # Create necessary directories
 for dir_path in [
     STORAGE_CONFIG["upload_dir"],
     STORAGE_CONFIG["chatlog_dir"],
-    DB_CONFIG["path"]
+    DB_CONFIG["store_path"]
 ]:
     os.makedirs(dir_path, exist_ok=True)

@@ -68,7 +68,7 @@ class RAGChatbot:
         )
 
         # Initialize database
-        self.chroma = PersistentClient(path=DB_CONFIG["path"])
+        self.chroma = PersistentClient(path=DB_CONFIG["store_path"])
         self.collection = self.chroma.get_or_create_collection(
             name=DB_CONFIG["collection_name"], embedding_function=self.embedder
         )

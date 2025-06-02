@@ -28,7 +28,7 @@ def check_llm_health() -> Tuple[bool, str]:
 def check_db_health() -> Tuple[bool, str]:
     """Check if the database is healthy."""
     try:
-        db = PersistentClient(path=DB_CONFIG["path"])
+        db = PersistentClient(path=DB_CONFIG["store_path"])
         db.heartbeat()
         return True, "Database is healthy"
     except Exception as e:
