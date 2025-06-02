@@ -99,8 +99,6 @@ flowchart TD
     G --> H[Answer Displayed via Gradio UI]
 ```
 
-![ragify-docs flowchart](./A_flowchart_diagram_in_digital_vector_illustration.png)
-
 ---
 
 ## 🚀 Running the App
