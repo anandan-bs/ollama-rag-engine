@@ -1,60 +1,44 @@
 """
-Configuration management for the application.
-Loads environment variables and provides configuration objects.
+config.py
+
+Centralized configuration module for managing environment variables, default settings,
+and toggles for models, API keys, directories, and features.
+Compatible with Pydantic v2+ using `pydantic-settings`.
 """
 
 import os
-from pathlib import Path
-from dotenv import load_dotenv
+from pydantic_settings import BaseSettings
+from pydantic import Field
 
-# Load environment variables from .env file
-load_dotenv()
 
-# Base directory of the project
-BASE_DIR = Path(__file__).resolve().parent
+class Settings(BaseSettings):
+    # OpenAI configuration
+    openai_api_key: str = Field(default_factory=lambda: os.getenv("OPENAI_API_KEY", ""))
+    openai_model: str = "gpt-4"
 
-# Model Configuration
-OLLAMA_CONFIG = {
-    "api_url": os.getenv("OLLAMA_API_URL", "http://localhost:11434/api/generate"),
-    "model_name": os.getenv("OLLAMA_MODEL_NAME", "llama3.2"),
-    "temperature": float(os.getenv("OLLAMA_TEMPERATURE", "0.8")),
-}
+    # Ollama configuration
+    use_ollama: bool = True
+    ollama_base_url: str = "http://localhost:11434"  # Added base URL for Ollama
+    ollama_model: str = "llama3.2"
+    ollama_embed_model: str = "nomic-embed-text"
 
-# Embedding Configuration
-EMBEDDING_CONFIG = {
-    "model_name": os.getenv("EMBEDDING_MODEL_NAME", "all-MiniLM-L6-v2"),
-}
+    # Embedding and reranking
+    embedding_model: str = "ollama/nomic-embed-text"
+    
+    reranker_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"  # used in app/reranker.py
+    enable_rerank: bool = True
 
-# Database Configuration
-DB_CONFIG = {
-    "collection_name": os.getenv("CHROMA_COLLECTION_NAME", "knowledge_base"),
-    "store_path": os.getenv("DB_PATH", "data/chroma_db"),
-    "data_dir": os.getenv("DATA_DIR", "data/uploads"),
-}
+    # App configuration
+    session_dir: str = "sessions"
+    export_dir: str = "exports"
+    chroma_storage: str = "./chroma_storage"
 
-# File Storage Configuration
-STORAGE_CONFIG = {
-    "upload_dir": os.getenv("UPLOAD_DIR", "data/uploads"),
-    "chatlog_dir": os.getenv("CHATLOG_DIR", "data/chatlogs"),
-}
+    # Generation configuration
+    temperature: float = 0.2
 
-# Text Processing Configuration
-PROCESSING_CONFIG = {
-    "min_chunk_size": int(os.getenv("MIN_CHUNK_SIZE", 100)),
-}
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
 
-# Environment Configuration
-ENV = os.getenv("ENV", "development")
-DEBUG = os.getenv("DEBUG", "true").lower() == "true"
 
-OPENAI_CONFIG = {
-    "api_key": os.getenv("OPENAI_API_KEY"),
-}
-
-# Create necessary directories
-for dir_path in [
-    STORAGE_CONFIG["upload_dir"],
-    STORAGE_CONFIG["chatlog_dir"],
-    DB_CONFIG["store_path"]
-]:
-    os.makedirs(dir_path, exist_ok=True)
+settings = Settings()
