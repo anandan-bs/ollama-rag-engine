@@ -27,7 +27,9 @@ logger.addHandler(handler)
 _sentence_transformer = SentenceTransformer("all-MiniLM-L6-v2")
 
 
-def _batch_ollama_embeddings(texts: List[str], batch_size: int = 32) -> List[List[float]]:
+def _batch_ollama_embeddings(
+    texts: List[str], batch_size: int = 32
+) -> List[List[float]]:
     """
     Send embedding requests to Ollama in batches.
 

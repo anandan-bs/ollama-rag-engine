@@ -39,6 +39,6 @@ def call_openai(prompt: str) -> str:
             temperature=0.3,
         )
         return response.choices[0].message.content.strip()
-    except Exception as e:
+    except Exception as e:  # noqa: F841
         logger.exception("OpenAI call failed")
         return "[OpenAI model failed to respond.]"

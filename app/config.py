@@ -24,7 +24,6 @@ class Settings(BaseSettings):
 
     # Embedding and reranking
     embedding_model: str = "ollama/nomic-embed-text"
-    
     reranker_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"  # used in app/reranker.py
     enable_rerank: bool = True
 

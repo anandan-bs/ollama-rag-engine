@@ -64,8 +64,10 @@ def main():
                     results.append(f"✅ {os.path.basename(file.name)}")
                     history.append((f"Ingested: {os.path.basename(file.name)}", "✅ Success"))
                 except Exception as e:
-                    results.append(f"❌ {os.path.basename(file.name)} - {str(e)}")
-                    history.append((f"Ingested: {os.path.basename(file.name)}", f"❌ Failed: {str(e)}"))
+                    filename = os.path.basename(file.name)
+                    error_msg = f"❌ {filename} - {str(e)}"
+                    results.append(error_msg)
+                    history.append((f"Ingested: {filename}", f"❌ Failed: {str(e)}"))
             if session:
                 save_chat_history(session, history)
             return history
@@ -84,13 +86,35 @@ def main():
             save_chat_history(session_name, history)
             return gr.update(choices=list_sessions())
 
-        file_upload.change(fn=handle_upload, inputs=[file_upload, session_dropdown], outputs=chatbot)
-        session_dropdown.change(fn=load_session, inputs=session_dropdown, outputs=chatbot)
-        textbox.submit(fn=ask_and_store, inputs=[textbox, chatbot, session_dropdown], outputs=[chatbot, textbox])
-        export_md_btn.click(fn=lambda h: export_chat(h, format="markdown"), inputs=chatbot)
+        file_upload.change(
+            fn=handle_upload,
+            inputs=[file_upload, session_dropdown],
+            outputs=chatbot
+        )
+        session_dropdown.change(
+            fn=load_session,
+            inputs=session_dropdown,
+            outputs=chatbot
+        )
+        textbox.submit(
+            fn=ask_and_store,
+            inputs=[textbox, chatbot, session_dropdown],
+            outputs=[chatbot, textbox]
+        )
+        export_md_btn.click(
+            fn=lambda h: export_chat(h, format="markdown"),
+            inputs=chatbot
+        )
         clear_btn.click(lambda: [], outputs=chatbot)
-        refresh_btn.click(fn=lambda: gr.update(choices=list_sessions()), outputs=session_dropdown)
-        save_btn.click(fn=save_session_manual, inputs=[chatbot, session_dropdown], outputs=[session_dropdown])
+        refresh_btn.click(
+            fn=lambda: gr.update(choices=list_sessions()),
+            outputs=session_dropdown
+        )
+        save_btn.click(
+            fn=save_session_manual,
+            inputs=[chatbot, session_dropdown],
+            outputs=[session_dropdown]
+        )
 
     return demo
 

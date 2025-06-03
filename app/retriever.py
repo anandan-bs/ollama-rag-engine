@@ -59,5 +59,5 @@ def retrieve_chunks(query: str, k: int = 5) -> List[dict]:
         return documents
 
     except Exception as e:
-        logger.exception("Failed to retrieve documents")
+        logger.exception("Failed to retrieve documents: %s", str(e))
         return []

@@ -50,5 +50,5 @@ def rerank_results(query: str, candidates: List[Dict], top_k: int = 5) -> List[D
         return reranked[:top_k]
 
     except Exception as e:
-        logger.exception("Failed to rerank results")
+        logger.exception("Failed to rerank results: %s", str(e))
         return candidates[:top_k]

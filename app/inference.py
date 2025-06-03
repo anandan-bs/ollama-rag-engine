@@ -29,7 +29,10 @@ def generate_answer(query: str) -> str:
         logger.info("Reranking completed")
 
     context_text = "\n\n".join([doc['text'] for doc in top_k_results])
-    prompt = f"Use the following context to answer the question:\n\n{context_text}\n\nQuestion: {query}\nAnswer:"
+    prompt = (
+        f"Use the following context to answer the question:"
+        f"\n\n{context_text}\n\nQuestion: {query}\nAnswer:"
+    )
 
     try:
         if settings.use_ollama:

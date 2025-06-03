@@ -18,6 +18,7 @@ formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+
 def is_ollama_available() -> bool:
     try:
         response = requests.get(f"{settings.ollama_base_url}/api/tags", timeout=5)
@@ -26,6 +27,7 @@ def is_ollama_available() -> bool:
     except Exception as e:
         logger.warning("Ollama not available: %s", e)
         return False
+
 
 def call_ollama(prompt: str, model: Optional[str] = None, stream: bool = False) -> str:
     """
@@ -53,6 +55,7 @@ def call_ollama(prompt: str, model: Optional[str] = None, stream: bool = False) 
         logger.exception("Ollama call failed")
         raise RuntimeError("Failed to call Ollama") from e
 
+
 def get_ollama_embedding(texts: List[str]) -> List[List[float]]:
     """
     Get embeddings from Ollama one by one (since most models don't support batch).
@@ -73,7 +76,9 @@ def get_ollama_embedding(texts: List[str]) -> List[List[float]]:
                 "model": settings.embedding_model.replace("ollama/", ""),
                 "prompt": text
             }
-            response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=60)
+            response = requests.post(
+                url, headers=headers, data=json.dumps(payload), timeout=60
+            )
             response.raise_for_status()
             result = response.json()
             vectors.append(result["embedding"])

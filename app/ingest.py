@@ -16,20 +16,26 @@ from app.retriever import collection
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 handler = logging.StreamHandler()
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+formatter = logging.Formatter(
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 handler.setFormatter(formatter)
 logger.addHandler(handler)
+
 
 def load_pdf(path: str) -> str:
     doc = fitz.open(path)
     return "\n".join([page.get_text() for page in doc])
 
+
 def load_docx(path: str) -> str:
     return docx2txt.process(path)
+
 
 def load_text(path: str) -> str:
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
+
 
 def load_document(path: str) -> str:
     if path.endswith(".pdf"):
@@ -40,6 +46,7 @@ def load_document(path: str) -> str:
         return load_text(path)
     else:
         raise ValueError(f"Unsupported file type: {path}")
+
 
 def chunk_text(text: str, max_tokens: int = 300, overlap: int = 50) -> List[str]:
     import re
@@ -62,6 +69,7 @@ def chunk_text(text: str, max_tokens: int = 300, overlap: int = 50) -> List[str]
     if current:
         chunks.append(" ".join(current))
     return chunks
+
 
 def ingest_document(path: str):
     logger.info(f"Ingesting document: {path}")
