@@ -9,17 +9,52 @@ import requests
 import json
 import logging
 from typing import List, Optional
-from app.config import settings
 
+from pytaskexec import TaskRunner, taskify
+import multiprocessing
+
+from ragify_docs.config import settings
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-handler = logging.StreamHandler()
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+
+
+@taskify
+def get_embedding_one(text: str) -> List[float]:
+    """
+    Get a single embedding from the Ollama API.
+
+    Args:
+        text (str): Text to embed.
+
+    Returns:
+        List[float]: The embedding.
+    """
+    url = f"{settings.ollama_base_url}/api/embeddings"
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "model": settings.embedding_model.replace("ollama/", ""),
+        "prompt": text
+    }
+    try:
+        response = requests.post(
+            url, headers=headers, data=json.dumps(payload), timeout=60
+        )
+        response.raise_for_status()
+        result = response.json()
+        return result["embedding"]
+    except Exception as e:
+        logger.exception(f"Embedding failed for text: {text[:60]}...")
+        raise e
 
 
 def is_ollama_available() -> bool:
+    """
+    Check if the Ollama API is available.
+
+    Returns:
+        bool: Whether the Ollama API is available.
+    """
     try:
         response = requests.get(f"{settings.ollama_base_url}/api/tags", timeout=5)
         response.raise_for_status()
@@ -66,24 +101,16 @@ def get_ollama_embedding(texts: List[str]) -> List[List[float]]:
     Returns:
         List[List[float]]: List of embeddings.
     """
-    url = f"{settings.ollama_base_url}/api/embeddings"
-    headers = {"Content-Type": "application/json"}
     vectors = []
-
-    for text in texts:
-        try:
-            payload = {
-                "model": settings.embedding_model.replace("ollama/", ""),
-                "prompt": text
-            }
-            response = requests.post(
-                url, headers=headers, data=json.dumps(payload), timeout=60
-            )
-            response.raise_for_status()
-            result = response.json()
-            vectors.append(result["embedding"])
-        except Exception as e:
-            logger.exception(f"Embedding failed for text: {text[:60]}...")
-            raise e
-
+    max_workers = multiprocessing.cpu_count() * 10
+    logger.info(f"Using {max_workers} workers to embed {len(texts)} texts")
+    with TaskRunner(max_workers=max_workers) as runner:
+        tids = [runner.schedule(get_embedding_one(text)) for text in texts]
+        for tid in tids:
+            try:
+                vectors.append(runner.get_result(tid))
+            except Exception as e:
+                logger.exception(f"Embedding failed for text: {runner.get_input(tid)[:60]}...")
+                raise e
+    logger.info(f"Embedding completed for {len(texts)} texts, total embeddings: {len(vectors)}")
     return vectors

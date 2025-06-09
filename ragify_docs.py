@@ -1,9 +1,8 @@
-# app.py (project root)
 """
 Entry point for launching the RAGify Docs Gradio application.
 """
 
-from app.main import main
+from ragify_docs.main import launch
 
 if __name__ == "__main__":
-    main().launch()
+    launch()

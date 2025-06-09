@@ -2,15 +2,15 @@
 
 setup:
 	pip install -r requirements.txt
-
-test:
-	pytest tests/ -v
+	python3 setup_model.py
 
 lint:
-	flake8 app/
+	flake8 ragify_docs/
+	flake8 ragify_docs.py
+	flake8 setup_model.py
 
 run:
-	python3 main.py
+	python3 ragify_docs.py
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -r {} +
@@ -21,7 +21,4 @@ clean:
 	find . -type d -name "*.egg-info" -exec rm -r {} +
 	find . -type d -name "*.egg" -exec rm -r {} +
 	find . -type d -name ".pytest_cache" -exec rm -r {} +
-	rm -rf data/uploads/*
-	rm -rf embeddings/*
-	rm -rf chatlogs/*
-	rm -rf app.log
+	find . -type d -name ".data" -exec rm -r {} +

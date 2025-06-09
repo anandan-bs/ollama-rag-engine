@@ -5,6 +5,7 @@ pydantic-settings>=2.0.3
 # Embedding and reranking
 sentence-transformers>=2.2.2
 transformers>=4.38.0
+nltk>=3.8.1
 
 # Vector DB
 chromadb>=0.4.24
@@ -18,10 +19,14 @@ sentence-splitter>=1.4
 requests>=2.31.0
 
 # OpenAI support (only for ChatCompletion)
-openai>=1.3.7
+openai==0.28
 
 # Optional utils
 tqdm>=4.66.0
+
+# For batch embedding
+pytaskexec>=0.1.0
+psutil>=5.9.0
 
 # Development dependencies
 pytest>=7.4.0

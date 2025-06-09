@@ -7,16 +7,13 @@ Only used for generating answers. Embeddings are never handled by OpenAI.
 
 import openai
 import logging
-from app.config import settings
+
+from ragify_docs.config import settings
 
 openai.api_key = settings.openai_api_key
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-handler = logging.StreamHandler()
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
 
 
 def call_openai(prompt: str) -> str:
@@ -39,6 +36,6 @@ def call_openai(prompt: str) -> str:
             temperature=0.3,
         )
         return response.choices[0].message.content.strip()
-    except Exception as e:  # noqa: F841
+    except Exception:  # noqa: F841
         logger.exception("OpenAI call failed")
         return "[OpenAI model failed to respond.]"

@@ -1,35 +1,44 @@
 """
-Setup script for ollama-rag-engine package.
+Setup script for ragify-docs package.
 """
 
 from setuptools import setup, find_packages
 
+def parse_requirements(filename):
+    with open(filename) as f:
+        requirements = []
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#'):
+                requirements.append(line)
+        return requirements
+
 setup(
-    name="ollama-rag-engine",
+    name="ragify-docs",
     version="0.1.0-beta",
     description="A powerful RAG engine powered by Ollama, ChromaDB, and Gradio",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="Anandan B S",
     author_email="anandanklnce@gmail.com",
-    url="https://github.com/anandan-bs/ollama-rag-engine",
+    url="https://github.com/anandan-bs/ragify-docs",
     packages=find_packages(),
     install_requires=[
-        "gradio>=4.19.2",
-        "chromadb>=0.4.15",
-        "sentence-transformers>=2.2.2",
-        "requests>=2.31.0",
-        "PyMuPDF>=1.23.8",
-        "tqdm>=4.66.1",
-        "python-dotenv>=1.0.1",
+        req for req in parse_requirements('requirements.txt')
+        if not any(dev_req in req.lower() for dev_req in ['pytest', 'pytest-cov', 'flake8', 'black'])
     ],
     extras_require={
-        "dev": [
-            "pytest>=7.4.4",
-            "pytest-cov>=4.1.0",
-            "flake8>=7.0.0",
-            "black>=24.1.1",
-            "pre-commit>=3.5.0",
+        'dev': [
+            'pytest>=7.4.0',
+            'pytest-cov>=4.1.0',
+            'flake8>=6.1.0',
+            'black>=23.11.0',
+            'pre-commit>=3.5.0',
+        ]
+    },
+    entry_points={
+        "console_scripts": [
+            "ragify-docs = ragify_docs.main:launch"
         ]
     },
     python_requires=">=3.9",

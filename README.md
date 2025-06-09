@@ -1,4 +1,5 @@
 # 📄 ragify-docs — Domain-Aware Chat with Your Own Documents
+[![CI Status](https://github.com/anandan-bs/ragify-docs/actions/workflows/ci.yml/badge.svg)](https://github.com/anandan-bs/ragify-docs/actions/workflows/main.yml)
 
 **ragify-docs** is a RAG (Retrieval-Augmented Generation) powered AI assistant that lets you upload your documents, index their content locally, and ask questions with full context awareness using hybrid LLMs — either OpenAI or Ollama.
 
@@ -35,14 +36,14 @@
 ## 🛠️ Installation
 
 ```bash
-git clone https://github.com/your-username/ragify-docs.git
+git clone https://github.com/anandan-bs/ragify-docs.git
 cd ragify-docs
 
 # Install dependencies
 pip install -r requirements.txt
 
-# or using poetry
-poetry install
+# or using make
+make setup
 ```
 
 ---
@@ -52,36 +53,45 @@ poetry install
 Create a `.env` file (or pass env vars directly):
 
 ```env
+# Required for OpenAI API access
 OPENAI_API_KEY=your_openai_api_key
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=llama3
-OLLAMA_EMBED_MODEL=nomic-embed-text
+
+# Required for Hugging Face model downloads
+HUGGINGFACE_TOKEN=your_huggingface_token
+
+# Optional: Set to 'false' to disable tokenizer parallelism
+TOKENIZERS_PARALLELISM='false'
 ```
 
-These can also be overridden in `config.py` using `pydantic.BaseSettings`.
+These can also be overridden in `ragify_docs/config.py` using `pydantic.BaseSettings`.
 
 ---
 
 ## 🧩 Directory Structure
 
 ```
-project_root/
-├── app/
-│   ├── config.py        # environment & model settings
-│   ├── embedder.py      # local embedding logic
-│   ├── retriever.py     # Chroma vector DB querying
-│   ├── ingest.py        # parse, chunk & embed documents
-│   ├── reranker.py      # optional semantic reranking
-│   ├── inference.py     # RAG controller logic
-│   ├── rag/
-│   │   ├── openai.py    # OpenAI API wrapper
-│   │   └── ollama.py    # Ollama API wrapper
-├── sessions/            # saved chat logs
-├── exports/             # exported chat sessions
-├── chroma_storage/      # persisted Chroma vector data
-├── app.py               # Gradio UI frontend
-├── requirements.txt
-└── pyproject.toml
+ragify-docs/
+├── ragify_docs/
+│   ├── core/                  # Core functionality modules
+│   │   ├── __init__.py
+│   │   ├── chunk.py          # Text chunking utilities
+│   │   ├── embed.py          # Embedding functionality
+│   │   ├── load_doc.py       # Document loading utilities
+│   │   ├── ollama.py         # Ollama API integration
+│   │   ├── openai.py         # OpenAI API integration
+│   │   ├── store.py          # Vector store operations
+│   │   └── tokenize.py       # Tokenization utilities
+│   ├── __init__.py
+│   ├── config.py             # Application configuration
+│   ├── inference.py          # RAG inference logic
+│   ├── ingest.py             # Document ingestion pipeline
+│   └── main.py               # Gradio UI and application entry point
+├── .data/                    # Local model storage, auto-generated
+├── Makefile                  # Development commands
+├── README.md                 # This file
+├── requirements.txt          # Python dependencies
+├── setup.py                  # Package installation
+└── setup_model.py            # Model setup script
 ```
 
 ---
@@ -93,10 +103,8 @@ flowchart TD
     A[User Uploads Document] --> B[Text is Chunked & Embedded]
     B --> C[Stored in Chroma Vector Store]
     D[User Asks Question] --> E[Embed Query & Retrieve Top-K]
-    E --> F[Optional Reranking]
-    F --> G[LLM Prompt: Uses Retrieved Chunks as Context]
-    C --> G
-    G --> H[Answer Displayed via Gradio UI]
+    E --> F[LLM Prompt: Uses Retrieved Chunks as Context]
+    F --> G[Answer Displayed via Gradio UI]
 ```
 
 ---
@@ -105,10 +113,13 @@ flowchart TD
 
 ```bash
 # Navigate to the project root (if not already there)
-cd path/to/ragify-docs
+cd ragify-docs
+python3 setup_model.py
+python3 ragify_docs.py
 
-# Launch the Gradio app
-python app.py
+
+# or using make
+make run
 ```
 
 Then open your browser at [http://localhost:7860](http://localhost:7860)
