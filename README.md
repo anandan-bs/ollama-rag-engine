@@ -1,5 +1,4 @@
 # 📄 ragify-docs — Domain-Aware Chat with Your Own Documents
-[![CI Status](https://github.com/anandan-bs/ragify-docs/actions/workflows/ci.yml/badge.svg)](https://github.com/anandan-bs/ragify-docs/actions/workflows/main.yml)
 
 **ragify-docs** is a RAG (Retrieval-Augmented Generation) powered AI assistant that lets you upload your documents, index their content locally, and ask questions with full context awareness using hybrid LLMs — either OpenAI or Ollama.
 
@@ -102,20 +101,20 @@ ragify-docs/
 flowchart TD
     %% Central Chroma DB
     DB[(Chroma Vector DB)]
-    
+
     %% Document Ingestion Pipeline
     A[User Uploads Document] --> B[Load Document]
     B --> C[Chunk with Token Awareness]
     C --> D[Generate Embeddings]
     D --> DB
-    
+
     %% Query Processing Pipeline
     E[User Asks Question] --> F[Embed Question]
     F --> G[Query Chroma DB]
     DB -->|Retrieve| G
     G --> H[Generate LLM Prompt with Context]
     H --> I[Display Answer in Gradio UI]
-    
+
     %% Styling for better visualization
     classDef db fill:#4db6ac,stroke:#333,stroke-width:2px,color:white
     class DB db
