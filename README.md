@@ -100,20 +100,25 @@ ragify-docs/
 
 ```mermaid
 flowchart TD
-    %% Document Processing Pipeline
+    %% Central Chroma DB
+    DB[(Chroma Vector DB)]
+    
+    %% Document Ingestion Pipeline
     A[User Uploads Document] --> B[Load Document]
     B --> C[Chunk with Token Awareness]
     C --> D[Generate Embeddings]
-    D --> E[Store in Chroma Vector DB]
+    D --> DB
     
     %% Query Processing Pipeline
-    F[User Asks Question] --> G[Embed Question]
-    G --> H[Retrieve Top-K Chunks]
-    H --> I[Generate LLM Prompt with Context]
-    I --> J[Display Answer in Gradio UI]
+    E[User Asks Question] --> F[Embed Question]
+    F --> G[Query Chroma DB]
+    DB -->|Retrieve| G
+    G --> H[Generate LLM Prompt with Context]
+    H --> I[Display Answer in Gradio UI]
     
-    %% Connections between pipelines
-    E --> H
+    %% Styling for better visualization
+    classDef db fill:#4db6ac,stroke:#333,stroke-width:2px,color:white
+    class DB db
 ```
 
 ---
