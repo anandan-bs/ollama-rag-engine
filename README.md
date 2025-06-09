@@ -100,11 +100,20 @@ ragify-docs/
 
 ```mermaid
 flowchart TD
-    A[User Uploads Document] --> B[Text is Chunked & Embedded]
-    B --> C[Stored in Chroma Vector Store]
-    D[User Asks Question] --> E[Embed Query & Retrieve Top-K]
-    E --> F[LLM Prompt: Uses Retrieved Chunks as Context]
-    F --> G[Answer Displayed via Gradio UI]
+    %% Document Processing Pipeline
+    A[User Uploads Document] --> B[Load Document]
+    B --> C[Chunk with Token Awareness]
+    C --> D[Generate Embeddings]
+    D --> E[Store in Chroma Vector DB]
+    
+    %% Query Processing Pipeline
+    F[User Asks Question] --> G[Embed Question]
+    G --> H[Retrieve Top-K Chunks]
+    H --> I[Generate LLM Prompt with Context]
+    I --> J[Display Answer in Gradio UI]
+    
+    %% Connections between pipelines
+    E --> H
 ```
 
 ---
